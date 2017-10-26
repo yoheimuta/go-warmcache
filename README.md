@@ -1,6 +1,6 @@
-# go-warmcache
+# go-warmcache [![Build Status](https://travis-ci.org/yoheimuta/go-warmcache.svg?branch=master)](https://travis-ci.org/yoheimuta/go-warmcache) [![GoDoc](https://godoc.org/github.com/yoheimuta/go-warmcache?status.svg)](https://godoc.org/github.com/yoheimuta/go-warmcache)
 
-go-warmcache is a thin go package which manages a warm cache.
+go-warmcache is a thin go package which manages an in-memory warm cache.
 It provides thread safety.
 
 You can use this package...
