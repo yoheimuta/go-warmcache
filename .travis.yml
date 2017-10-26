@@ -1,0 +1,17 @@
+language: go
+
+go:
+- 1.8
+- 1.9
+- tip
+
+before_script:
+- go get golang.org/x/tools/cmd/goimports
+- go get github.com/golang/lint/golint
+
+script:
+- go test -race -v ./...
+- go vet ./...
+- golint ./... | xargs -r false
+- find . -name '*.go' | xargs gofmt -l | xargs -r false
+- find . -name '*.go' | xargs goimports -l | xargs -r false
