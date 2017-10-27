@@ -3,6 +3,7 @@ package warmcache
 import (
 	"errors"
 	"fmt"
+	"reflect"
 	"regexp"
 	"sync/atomic"
 	"testing"
@@ -17,8 +18,8 @@ func TestCacheMgr(t *testing.T) {
 		inputCacheFunc   FetchCacheFunc
 		inputElapsedChan chan time.Duration
 		wantElapsedMsg   string
-		wantCacheData    int32
-		wantCacheData2   int32
+		wantCacheData    interface{}
+		wantCacheData2   interface{}
 		wantIsStale      bool
 		wantIsErr        bool
 		wantIsErr2       bool
@@ -32,8 +33,8 @@ func TestCacheMgr(t *testing.T) {
 			},
 			inputElapsedChan: make(chan time.Duration),
 			wantElapsedMsg:   `50.*ms`,
-			wantCacheData:    1,
-			wantCacheData2:   2,
+			wantCacheData:    int32(1),
+			wantCacheData2:   int32(2),
 			wantIsStale:      false,
 			wantIsErr:        false,
 			wantIsErr2:       false,
@@ -49,11 +50,26 @@ func TestCacheMgr(t *testing.T) {
 			},
 			inputElapsedChan: make(chan time.Duration),
 			wantElapsedMsg:   `.*µs`,
-			wantCacheData:    1,
-			wantCacheData2:   1,
+			wantCacheData:    int32(1),
+			wantCacheData2:   int32(1),
 			wantIsStale:      false,
 			wantIsErr:        false,
 			wantIsErr2:       true,
+		},
+		{
+			inputInterval: 1 * time.Second,
+			inputCacheFunc: func() (interface{}, error) {
+				time.Sleep(500 * time.Millisecond)
+				atomic.AddInt32(&counter, 1)
+				return []string{"hoge", fmt.Sprintf("fuga%d", atomic.LoadInt32(&counter))}, nil
+			},
+			inputElapsedChan: make(chan time.Duration),
+			wantElapsedMsg:   `50.*ms`,
+			wantCacheData:    []string{"hoge", "fuga1"},
+			wantCacheData2:   []string{"hoge", "fuga2"},
+			wantIsStale:      false,
+			wantIsErr:        false,
+			wantIsErr2:       false,
 		},
 	}
 
@@ -76,9 +92,8 @@ func TestCacheMgr(t *testing.T) {
 		if !test.wantIsErr && err != nil {
 			t.Errorf(`should be not err, but got %s`, err)
 		}
-		intData := data.(int32)
-		if intData != test.wantCacheData {
-			t.Errorf(`got %d, but want %d`, intData, test.wantCacheData)
+		if !reflect.DeepEqual(data, test.wantCacheData) {
+			t.Errorf(`got %v, but want %v`, data, test.wantCacheData)
 		}
 
 		// second get
@@ -98,9 +113,8 @@ func TestCacheMgr(t *testing.T) {
 		if !test.wantIsErr2 && err != nil {
 			t.Errorf(`should be not err, but got %s`, err)
 		}
-		intData = data.(int32)
-		if intData != test.wantCacheData2 {
-			t.Errorf(`got %d, but want %d`, intData, test.wantCacheData2)
+		if !reflect.DeepEqual(data, test.wantCacheData2) {
+			t.Errorf(`got %v, but want %v`, data, test.wantCacheData2)
 		}
 
 		c.Stop()
