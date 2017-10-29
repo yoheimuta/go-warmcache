@@ -9,9 +9,10 @@ BINARY_NAME=example
 all:install run
 
 install:
-	docker build $(BUILD_FLAG) -t $(BUILD_CANO_IMAGE_NAME) Dockerfile_build
+	docker build $(BUILD_FLAG) -t $(BUILD_CANO_IMAGE_NAME) -f Dockerfile.build .
 	docker run $(BUILD_CANO_IMAGE_NAME) sleep 10 &
 	sleep 1
+	rm -f ./Dockerfile/$(BINARY_NAME)
 	docker cp `docker ps | grep $(BUILD_IMAGE_NAME) | cut -f1 -d' '`\:/go/bin/$(BINARY_NAME) ./Dockerfile/
 
 run:
