@@ -1,0 +1,12 @@
+version: 2
+jobs:
+    build:
+        working_directory: /go/src/github.com/yoheimuta/go-warmcache
+        docker:
+            - image: yoheimuta/go-warmcache-circleci:latest
+        steps:
+            - checkout
+            - run:
+                name: "test go code"
+                command: |
+                    go test -v ./...

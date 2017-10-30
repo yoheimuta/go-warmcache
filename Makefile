@@ -1,14 +1,19 @@
 BUILD_FLAG=--no-cache
-PROJECT_NAME=go-warmcache
-BUILD_IMAGE_NAME=example-build:latest
-BUILD_CANO_IMAGE_NAME="$(PROJECT_NAME)/$(BUILD_IMAGE_NAME)"
-RUN_IMAGE_NAME=example:latest
-RUN_CANO_IMAGE_NAME="$(PROJECT_NAME)/$(RUN_IMAGE_NAME)"
+
+USER_NAME=yoheimuta
+BUILD_IMAGE_NAME=go-warmcache-example-build:latest
+BUILD_CANO_IMAGE_NAME="$(USER_NAME)/$(BUILD_IMAGE_NAME)"
+
+RUN_IMAGE_NAME=go-warmcache-example:latest
+RUN_CANO_IMAGE_NAME="$(USER_NAME)/$(RUN_IMAGE_NAME)"
 BINARY_NAME=example
 
-all:install run
+CIRCLE_IMAGE_NAME=go-warmcache-circleci:latest
+CIRCLE_CANO_IMAGE_NAME="$(USER_NAME)/$(CIRCLE_IMAGE_NAME)"
 
-install:
+install:generate run
+
+generate:
 	docker build $(BUILD_FLAG) -t $(BUILD_CANO_IMAGE_NAME) -f Dockerfile.build .
 	docker run $(BUILD_CANO_IMAGE_NAME) sleep 10 &
 	sleep 1
@@ -18,3 +23,7 @@ install:
 run:
 	docker build $(BUILD_FLAG) -t $(RUN_CANO_IMAGE_NAME) Dockerfile
 	docker run $(RUN_CANO_IMAGE_NAME) $(BINARY_NAME)
+
+circle:
+	docker build $(BUILD_FLAG) -t $(CIRCLE_CANO_IMAGE_NAME) _circle
+	docker push $(CIRCLE_CANO_IMAGE_NAME)
