@@ -1,4 +1,4 @@
-# go-warmcache [![Build Status](https://travis-ci.org/yoheimuta/go-warmcache.svg?branch=master)](https://travis-ci.org/yoheimuta/go-warmcache) [![GoDoc](https://godoc.org/github.com/yoheimuta/go-warmcache?status.svg)](https://godoc.org/github.com/yoheimuta/go-warmcache)
+# go-warmcache [![GoDoc](https://godoc.org/github.com/yoheimuta/go-warmcache?status.svg)](https://godoc.org/github.com/yoheimuta/go-warmcache) [![Build Status](https://travis-ci.org/yoheimuta/go-warmcache.svg?branch=master)](https://travis-ci.org/yoheimuta/go-warmcache) [![CircleCI](https://circleci.com/gh/yoheimuta/go-warmcache/tree/master.svg?style=svg)](https://circleci.com/gh/yoheimuta/go-warmcache/tree/master)
 
 go-warmcache is a thin go package which manages an in-memory warm cache.
 It provides thread safety.
